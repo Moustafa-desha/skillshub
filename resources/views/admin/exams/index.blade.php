@@ -8,12 +8,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Skills</h1>
+            <h1 class="m-0 text-dark">Exams</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{{ url('dashboard') }}">Dashboard</a></li>
-              <li class="breadcrumb-item active">Skills</li>
+              <li class="breadcrumb-item active">Exams</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -30,12 +30,12 @@
            <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">All Skills</h3>
+                  <h3 class="card-title">All Exams</h3>
   
                   <div class="card-tools">
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#add-modal">
+                    <a href="{{ url('dashboard/exams/create') }}" class="btn btn-default">
                         Add New
-                      </button>
+                    </a>
                   </div>
                 </div>
                 <!-- /.card-header -->
@@ -47,35 +47,42 @@
                         <th>Name (en)</th>
                         <th>Name (ar)</th>
                         <th>Image</th>
-                        <th>Category</th>
+                        <th>Skill</th>
+                        <th>Questions N</th>
                         <th>Status</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                        @foreach ($skills as  $skill)
+                        @foreach ($exams as  $exam)
                         <tr>
                             {{-- دى خاصيه فى لارافيل علشان تجيب رقم الايدى اللى انت واقف عليه --}}
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $skill->name ('en') }}</td>
-                            <td>{{ $skill->name ('ar') }}</td>
+                            <td>{{ $exam->name ('en') }}</td>
+                            <td>{{ $exam->name ('ar') }}</td>
                             <td>
-                                <img src="{{ asset("uploads/$skill->img") }}" height="80px">
+                                <img src="{{ asset("uploads/$exam->img") }}" height="80px">
                             </td>
-                            <td>{{ $skill->cat->name ('en') }}</td>
+                            <td>{{ $exam->skill->name ('en') }}</td>
+                            <td>{{ $exam->questions_num }}</td>
                             <td>
-                                @if ($skill->active)
-                                    <a href="{{ url("dashboard/skills/toggle/$skill->id") }}" class="btn btn-success">Active</a>
+                                @if ($exam->active)
+                                    <a href="{{ url("dashboard/exams/toggle/$exam->id") }}" class="btn btn-success">Active</a>
                                 @else   
-                                        <a href="{{ url("dashboard/skills/toggle/$skill->id") }}" class="btn btn-danger">Disable</a>
+                                        <a href="{{ url("dashboard/exams/toggle/$exam->id") }}" class="btn btn-danger">Disable</a>
                                 @endif
                             </td>
                             <td>
-                                {{-- هنا بنتعت كل البيانات اللى محتاجينها ع البوتن علشان يرجع بيها ع الفورم --}}
-                                <button type="button" class="btn btn-sm btn-info edit-btn" data-id="{{ $skill->id }}" data-name-en="{{ $skill->name ('en') }}" data-name-ar="{{ $skill->name ('ar') }}" data-img="{{ $skill->img }}" data-cat-id="{{ $skill->cat_id }}" data-toggle="modal" data-target="#edit-modal">
+                              <a href="{{ url("dashboard/exams/show/$exam->id") }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                              </a>
+                              <a href="{{ url("dashboard/exams/show-questions/$exam->id") }}" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-question"></i>
+                              </a>
+                                <a href="{{ url("dashboard/exams/edit/$exam->id") }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
-                                </button>
-                                <a href="{{ url("dashboard/skills/delete/$skill->id") }}" class="btn btn-sm btn-danger">
+                                </a>
+                                <a href="{{ url("dashboard/exams/delete/$exam->id") }}" class="btn btn-sm btn-danger">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>
@@ -84,7 +91,7 @@
                     </tbody>
                   </table>
                     <div class="d-flex my-3 justify-content-center">
-                    {{ $skills->links() }}
+                    {{ $exams->links() }}
                     </div>
                 </div>
                 <!-- /.card-body -->
@@ -98,7 +105,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <div class="modal fade" id="add-modal" aria-hidden="true" style="display: none">
+  {{-- <div class="modal fade" id="add-modal" aria-hidden="true" style="display: none">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -107,7 +114,6 @@
             <span aria-hidden="true">×</span>
           </button>
         </div>
-
 
         <div class="modal-body">
 
@@ -160,92 +166,16 @@
       <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
-  </div>
+  </div> --}}
 
         {{-- موديل تحديث البيانات  --}}
 
-  <div class="modal fade" id="edit-modal" aria-hidden="true" style="display: none">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Edit</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
 
-
-        <div class="modal-body">
-            @include('admin.inc.errors')
-
-            <form method="Post" action="{{ url('dashboard/skills/update') }}" id="edit-form" enctype="multipart/form-data">
-                @csrf
-                {{-- hidden id to can access data --}}
-                <input type="hidden" name="id" id="edit-form-id">
-              <div class="form-group">
-                  <label>Name (en)</label>
-                  <input type="text" name="name_en" class="form-control" id="edit-form-name-en">
-              </div>
-              <div class="form-group">
-                  <label>Name (ar)</label>
-                  <input type="text" name="name_ar" class="form-control" id="edit-form-name-ar">
-              </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <div class="form-group">
-                        <label>Image</label>
-                      <div class="input-group">
-                            <div class="custom-file">
-                            <input type="file" class="custom-file-input" name="img" >
-                            <label class="custom-file-label">Image</label>
-                            </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select class="custom-select form-control" name="cat_id" id="edit-form-cat-id">
-                            @foreach ($cats as $cat)
-                                <option value="{{ $cat->id }}">{{$cat->name('en')}}</option>
-                            @endforeach
-                        </select>
-                    </div> 
-                </div> 
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" form="edit-form" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
 
 @endsection
 
 @section('scripts')
     <script>
-        $('.edit-btn').click(function() {
-            let id = $(this).attr('data-id')
-            let nameEn = $(this).attr('data-name-en')
-            let nameAr = $(this).attr('data-name-ar')
-            let img = $(this).attr('data-img')
-            let catId = $(this).attr('data-cat-id')
 
-            console.log(id,nameEn,nameAr);
-
-            $('#edit-form-id').val(id)
-            $('#edit-form-name-en').val(nameEn)
-            $('#edit-form-name-ar').val(nameAr)
-            // $('#edit-form-img').val(img)
-            $('#edit-form-cat-id').val(catId)
-
-
-        })
         </script>
 @endsection

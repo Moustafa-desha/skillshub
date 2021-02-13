@@ -20,6 +20,8 @@
 		<!-- Custom stlylesheet -->
 		<link type="text/css" rel="stylesheet" href="{{ asset('web/css/style.css') }}"/>
 
+		<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+
         @yield('styles')
 
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -105,16 +107,35 @@
 		<script type="text/javascript" src="{{ asset('web/js/bootstrap.min.js') }}"></script>
 		<script type="text/javascript" src="{{ asset('web/js/main.js') }}"></script>
 
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 		<!-- javascript to recive click from button sign out and active it in sign out form  from navbar  -->
 		<script>
 			$('#logout-link').click(function(e) {
 				e.preventDefault()
 				$('#logout-form').submit()
 			})
-
-
 		</script>
+
+				{{-- البوشر وملفاته وفيه فوق ف سى سى اس ملف كمان وهنفعله ف الاكزام كنترولر علشان لما اضيف امتحان يظهر اشعار --}}
+				<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+				<script>
+			  
+				  // Enable pusher logging - don't include this in production
+				  Pusher.logToConsole = true;
+			  
+				  var pusher = new Pusher('c8416c5561127e70fe25', {
+					cluster: 'eu'
+				  });
+			  
+				  var channel = pusher.subscribe('notifications-channel');
+				  channel.bind('exam-added', function(data) {
+					// alert(JSON.stringify(data));
+					  toastr.success('New Exam Added!')
+				  });
+				</script>
  
-        @yield('scripts')
+		@yield('scripts')
+		
 	</body>
 </html>

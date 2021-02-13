@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Cat;
 use Exception;
+use App\Models\Cat;
 use Illuminate\Http\Request;
 use PhpParser\Builder\Function_;
 use PhpParser\Node\Expr\FuncCall;
+use App\Http\Controllers\Controller;
 use Symfony\Contracts\Service\Attribute\Required;
 
 class CatController extends Controller
@@ -34,6 +34,7 @@ class CatController extends Controller
                     ]),
                 ]);
                 $request->session()->flash('msg', 'Row added successfully');
+
                 return back();
     }
 
